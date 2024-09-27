@@ -10,7 +10,7 @@ import org.springframework.data.annotation.Id;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product {
+public final class Product {
     // Class model of Product
     @Id
     private long id;
