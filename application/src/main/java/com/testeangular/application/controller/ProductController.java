@@ -2,65 +2,49 @@ package com.testeangular.application.controller;
 
 import java.util.*;
 import com.testeangular.application.model.Product;
+import com.testeangular.application.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/product")
 public class ProductController {
-    // Set arraylist of the object Product
-    private List<Product> productList = new ArrayList<>();
-    // Set actual range of array
-    private int currentId = 1;
 
-    // POST request to add product
-    @PostMapping
-    public String addProduct(@RequestBody Product product) {
-        product.setId(currentId);
-        productList.add(product);
-        currentId++;
-        return "O produto " + product.getName() + " foi adicionado com sucesso!";
-    }
+    @Autowired
+    private ProductService productService;
 
-    // PUT request to update a product
-    @PutMapping("/{id}")
-    public String updateProduct(@PathVariable int id, @RequestBody Product product) {
-       for (Product products: productList) {
-           if (products.getId() == id) {
-                product.setName(product.getName());
-                product.setPrice(product.getPrice());
-                return "O produto com ID " + id + " foi alterado com sucesso.";
-           }
-       }
-       return "Produto com ID " + id + " não foi encontrado.";
-    }
-
-    // DELETE request to remove a product
-    @DeleteMapping("/{id}")
-    public String deleteProduct(@PathVariable int id) {
-        for(Product product: productList) {
-            if(product.getId() == id) {
-                productList.remove(id -1);
-                return "O produto com ID " + id + " foi excluído com sucesso.";
-            }
-        }
-        return "O produto com ID " + id + " não foi encontrado.";
-    }
-
-    // GET to list all the products
+    // GET api/products
     @GetMapping
-    public List<Product> listAllProducts(){
-        return productList;
+    public List<Product> getAllProducts(){
+        return productService.getAllProducts();
     }
 
-    // GET {id} to search and list a product
+    // GET api/products/{id}
     @GetMapping("/{id}")
-    public Product searchProduct(@PathVariable int id){
-        for(Product product: productList) {
-            if(product.getId() == id) {
-                return product;
-            }
-        }
-        // if the product not exist then return null
-        return null;
+    public ResponseEntity<Product> getProductById(@PathVariable Long id){
+        Product product = productService.getProductById(id);
+        return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
     }
+
+    // POST api/products
+    @PostMapping
+    public Product addProduct (@RequestBody Product product) {
+        return productService.saveProduct(product);
+    }
+
+    // PUT api/products/{id}
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product updateProduct) {
+       Product product = productService.updateProduct(id, updateProduct);
+       return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
+    }
+
+    // DELETE api/products/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Product> deleteProduct(@PathVariable Long id) {
+        boolean deleted = productService.deleteProduct(id);
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+
 }

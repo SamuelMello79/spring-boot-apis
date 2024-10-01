@@ -1,11 +1,16 @@
 package com.testeangular.application.model;
 
+import jakarta.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 
+
+@Entity
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,9 +18,9 @@ import org.springframework.data.annotation.Id;
 public final class Product {
     // Class model of Product
     @Id
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String name;
     private double price;
-    private long class_id;
 }
